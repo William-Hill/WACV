@@ -50,7 +50,7 @@ def crop_around_lonlat(image,y_lonlat_in):
   Returns:
     cropped_image: (24,10(h),10(w),channels) = (24,10,10,2)
   """
-  image=np.reshape(image, [FLAGS.batch_size,1,h,w,channels])  
+  image=np.reshape(image, [FLAGS.batch_size,1,h,w,channels])
   cropped_image=[];
   for i in range(int(FLAGS.batch_size)):
       lon,lat=y_lonlat_in[i,0,:]
@@ -60,8 +60,8 @@ def crop_around_lonlat(image,y_lonlat_in):
       lat_up=lat_index+5
       lon_lb=lon_index-5
       lon_up=lon_index+5
-      if float(lat_index-5)<0.0 : 
-          lat_lb=0 
+      if float(lat_index-5)<0.0 :
+          lat_lb=0
           lat_up=lat_lb+10;
       if float(lat_index+5)>(h-1):
           lat_up=(h-1)
@@ -248,7 +248,7 @@ def Inference(images,timesteps):
     biases = _variable_on_cpu('biases', [NUM_CLASSES],
                               tf.constant_initializer(0.0))
     softmax_linear = tf.add(tf.matmul(local4, weights), biases, name=scope.name)
-    
+
     output_loc=tf.reshape(softmax_linear,[FLAGS.batch_size,1, -1])
   return output_loc
 
@@ -297,33 +297,33 @@ def inference_1layer(images):
   return output_loc
 
 def old_embedding(xx):
-	#Make embedding of X using tf.nn.conv1d
-	#temp=[];
-	#for i in range(timesteps):
-	# Convolution Layer with 32 filters and a kernel size of 5
-	conv1 = tf.layers.conv2d(xx, 64, 5, activation=tf.nn.relu)
-	# Max Pooling (down-sampling) with strides of 2 and kernel size of 2
-	conv1 = tf.layers.max_pooling2d(conv1, 2, 2)
-	# Convolution Layer with 64 filters and a kernel size of 5
-	conv2 = tf.layers.conv2d(conv1, 64, 5, activation=tf.nn.relu)
-	# Max Pooling (down-sampling) with strides of 2 and kernel size of 2
-	conv2 = tf.layers.max_pooling2d(conv2, 2, 2)
-	# Convolution Layer with 32 filters and a kernel size of 5
-	conv3 = tf.layers.conv2d(conv2,32, 5, activation=tf.nn.relu)
-	# Max Pooling (down-sampling) with strides of 2 and kernel size of 2
-	conv3 = tf.layers.max_pooling2d(conv3, 2, 2)
-	# Convolution Layer with 64 filters and a kernel size of 3
-	conv4 = tf.layers.conv2d(conv3,32, 5, activation=tf.nn.relu)
-	# Max Pooling (down-sampling) with strides of 2 and kernel size of 2
-	conv4 = tf.layers.max_pooling2d(conv4, 2, 2)
-	conv4_flatten=tf.reshape(conv4,[FLAGS.batch_size*timesteps,-1]);
-	##FC
-	fc1=tf.layers.dense(conv4_flatten,8192)
-	fc1=tf.layers.dropout(fc1,rate=0.8);
-	x_em=tf.layers.dense(fc1,4096)
-	x_em=tf.reshape(x_em,[FLAGS.batch_size,timesteps,-1])
-	print("SIZE  "+str(x_em));
-        return x_em
+    #Make embedding of X using tf.nn.conv1d
+    #temp=[];
+    #for i in range(timesteps):
+    # Convolution Layer with 32 filters and a kernel size of 5
+    conv1 = tf.layers.conv2d(xx, 64, 5, activation=tf.nn.relu)
+    # Max Pooling (down-sampling) with strides of 2 and kernel size of 2
+    conv1 = tf.layers.max_pooling2d(conv1, 2, 2)
+    # Convolution Layer with 64 filters and a kernel size of 5
+    conv2 = tf.layers.conv2d(conv1, 64, 5, activation=tf.nn.relu)
+    # Max Pooling (down-sampling) with strides of 2 and kernel size of 2
+    conv2 = tf.layers.max_pooling2d(conv2, 2, 2)
+    # Convolution Layer with 32 filters and a kernel size of 5
+    conv3 = tf.layers.conv2d(conv2,32, 5, activation=tf.nn.relu)
+    # Max Pooling (down-sampling) with strides of 2 and kernel size of 2
+    conv3 = tf.layers.max_pooling2d(conv3, 2, 2)
+    # Convolution Layer with 64 filters and a kernel size of 3
+    conv4 = tf.layers.conv2d(conv3,32, 5, activation=tf.nn.relu)
+    # Max Pooling (down-sampling) with strides of 2 and kernel size of 2
+    conv4 = tf.layers.max_pooling2d(conv4, 2, 2)
+    conv4_flatten=tf.reshape(conv4,[FLAGS.batch_size*timesteps,-1]);
+    ##FC
+    fc1=tf.layers.dense(conv4_flatten,8192)
+    fc1=tf.layers.dropout(fc1,rate=0.8);
+    x_em=tf.layers.dense(fc1,4096)
+    x_em=tf.reshape(x_em,[FLAGS.batch_size,timesteps,-1])
+    print("SIZE  "+str(x_em));
+    return x_em
 
 def old_embedding_1layer(xx):
         #Make embedding of X using tf.nn.conv1d

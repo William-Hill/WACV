@@ -17,21 +17,34 @@ h=128
 w=257
 #large data: 16 sec. small data: 5 sec
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+if tf.test.gpu_device_name():
+    print('GPU found')
+    print("Gpu name:", tf.test.gpu_device_name())
+else:
+    print("No GPU found")
+
+
+
 #1: Log files
 fout_log= open("log.txt","w")
 fout_log.write("TEST LOG PRINT\nSOO\n")
 
+#This is the model
 #2: Graph
 #Training Parameters
 #validation_step=10;
 learning_rate =0.001
+#placeholders; batch_size defined in function.py, channels are dimensions of the input data aka climate variable
 X = tf.placeholder("float", [FLAGS.batch_size, None, h,w,channels]) #shape=(24, ?, 128, 257, 3)
 Y = tf.placeholder("float", [FLAGS.batch_size, None, h,w,1]) #shape=(24, ?, 128, 257, 1)
 timesteps = tf.shape(X)[1]
 h=tf.shape(X)[2]
-w=tf.shape(X)[3] 
+w=tf.shape(X)[3]
 
 prediction, last_state = ConvLSTM(X) #shape=(24, ?, 256, 513, 1)
+#minimize the loss between ground truth and prediction
 loss_op=tf.losses.mean_pairwise_squared_error(Y,prediction)
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 train_op = optimizer.minimize(loss_op)

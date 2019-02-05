@@ -1,6 +1,7 @@
+"""Main module for running ESGF Hurricane Deep Learning Model."""
 from __future__ import print_function
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+import logging
 import tensorflow as tf
 from tensorflow.contrib import rnn
 from function import *
@@ -9,21 +10,25 @@ from train import *
 from testing import *
 from rnn import *
 import numpy as np
-#import skimage.measure
-#State from ground truth, initial position:given, output location feed to input as mask
-#(6, 60101, 128, 257)
-#h=256; w=513;
-h=128
-w=257
-#large data: 16 sec. small data: 5 sec
+# State from ground truth, initial position:given, output location feed to input as mask
+# (6, 60101, 128, 257)
+HEIGHT = 128
+WIDTH = 257
+# large data: 16 sec. small data: 5 sec
 
+# Sets logging level: INFO and WARNING messages are not printed; only error printed
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+# Controls visibility of GPUs
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-if tf.test.gpu_device_name():
-    print('GPU found')
-    print("Gpu name:", tf.test.gpu_device_name())
-else:
-    print("No GPU found")
+
+def check_for_gpu():
+    if tf.test.gpu_device_name():
+        print('GPU found')
+        print("Gpu name:", tf.test.gpu_device_name())
+    else:
+        print("No GPU found")
 
 
 
@@ -37,11 +42,11 @@ fout_log.write("TEST LOG PRINT\nSOO\n")
 #validation_step=10;
 learning_rate =0.001
 #placeholders; batch_size defined in function.py, channels are dimensions of the input data aka climate variable
-X = tf.placeholder("float", [FLAGS.batch_size, None, h,w,channels]) #shape=(24, ?, 128, 257, 3)
-Y = tf.placeholder("float", [FLAGS.batch_size, None, h,w,1]) #shape=(24, ?, 128, 257, 1)
+X = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, channels]) #shape=(24, ?, 128, 257, 3)
+Y = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, 1]) #shape=(24, ?, 128, 257, 1)
 timesteps = tf.shape(X)[1]
-h=tf.shape(X)[2]
-w=tf.shape(X)[3]
+HEIGHT = tf.shape(X)[2]
+WIDTH = tf.shape(X)[3]
 
 prediction, last_state = ConvLSTM(X) #shape=(24, ?, 256, 513, 1)
 #minimize the loss between ground truth and prediction

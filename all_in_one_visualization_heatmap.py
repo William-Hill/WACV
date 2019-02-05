@@ -3,7 +3,7 @@ from matplotlib import pyplot
 import matplotlib.colors as clr
 import numpy as np
 import random
-test_num=27
+test_num=4
 name=["u850","v850","prect"]
 image_inn=np.load('./X_test.npy') #(84, 24, 10, 128, 257, 3)
 label_inn=np.load("./Y_test.npy") #(84, 24, 10, 128, 257, 1)
@@ -18,12 +18,12 @@ for ii in range(d1):
         image=image_in[i,:,:,:,:] #[10,128,257,3]
         label=label_in[i,:,:,:] #[10,128,257]
         prediction=prediction_in[i,:,:,:] #[10,128,257]
-        s1,s2,s3=np.shape(prediction) 
+        s1,s2,s3=np.shape(prediction)
         for k in range(d3): #10 time
             pyplot.figure(1,figsize=(20,5))
             yy=label[k,:,:]
             pre=prediction[k,:,:]
-            img_o=image[k,:,:,:] 
+            img_o=image[k,:,:,:]
             h=128; w=257;
             yy=np.reshape(yy,[h,w])
             pre=np.reshape(pre,[h,w])

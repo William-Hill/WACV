@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow.contrib import rnn
 from function import *
 from inference import *
-from load_data import *
 from rnn import *
 import numpy as np
 import random
@@ -11,7 +10,7 @@ def train(sess,loss_op,train_op,X,Y,train_X,train_Y,val_X,val_Y,prediction, last
     val_best_loss=10; val_best_step=0;
     alpha=0.9
     count=0
-    train_size=len(train_X) 
+    train_size=len(train_X)
     val_size=len(val_X)
     saver = tf.train.Saver()
     fetches = {'final_state': last_state,
@@ -25,7 +24,7 @@ def train(sess,loss_op,train_op,X,Y,train_X,train_Y,val_X,val_Y,prediction, last
             if stepp%5 == 0:
                 val_sum=0
              #   for j in range(val_size):
-                j=random.randint(0,val_size-1) 
+                j=random.randint(0,val_size-1)
                 lossv= 10000 * sess.run(loss_op,  feed_dict={X:val_X[j], Y:val_Y[j]})
                 val_sum=lossv
                 loss = val_sum
@@ -52,8 +51,3 @@ def train(sess,loss_op,train_op,X,Y,train_X,train_Y,val_X,val_Y,prediction, last
                         if (count > 10):
                             print("Iteration "+str(it)+"Training DONE!  \n")
                             break
-
-
-
-
-

@@ -12,9 +12,10 @@ from rnn import *
 import numpy as np
 # State from ground truth, initial position:given, output location feed to input as mask
 # (6, 60101, 128, 257)
+
+# Comes from the shape of the data, significant
 HEIGHT = 128
 WIDTH = 257
-# large data: 16 sec. small data: 5 sec
 
 # Sets logging level: INFO and WARNING messages are not printed; only error printed
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -44,6 +45,8 @@ learning_rate =0.001
 #placeholders; batch_size defined in function.py, channels are dimensions of the input data aka climate variable
 X = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, channels]) #shape=(24, ?, 128, 257, 3)
 Y = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, 1]) #shape=(24, ?, 128, 257, 1)
+
+# TODO: are these variables needed, do not look like they are used after defining
 timesteps = tf.shape(X)[1]
 HEIGHT = tf.shape(X)[2]
 WIDTH = tf.shape(X)[3]
@@ -58,11 +61,12 @@ train_op = optimizer.minimize(loss_op)
 with tf.Session() as sess:
     # Initialize all variables
     saver = tf.train.Saver()
+    # TODO: are timesteps, HEIGHT, WIDTH used with this global_variables_initializer?
     init = tf.global_variables_initializer()
     sess.run(init)
-    train_X,train_Y,test_X,test_Y,val_X,val_Y=read_input("/export/kim79/h2/TC_labeled_dataset/2_new_dataset_for_heatmap_generation_normalized/")
+    train_X,train_Y,test_X,test_Y,val_X,val_Y=read_input()
     print("finished collecting data")
-    for ii in range(1000):
+    for ii in range(100):
         train(sess,loss_op,train_op,X,Y,train_X,train_Y,val_X,val_Y,prediction, last_state,fout_log)
         name=str(ii)
         test(name,sess,loss_op,train_op,X,Y,test_X,test_Y,prediction,last_state,fout_log)

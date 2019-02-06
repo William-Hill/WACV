@@ -15,6 +15,7 @@ def train(sess,loss_op,train_op,X,Y,train_X,train_Y,val_X,val_Y,prediction, last
     saver = tf.train.Saver()
     fetches = {'final_state': last_state,
               'prediction_lonlat': prediction}
+
     for epoch in range(1):
         for step in range(train_size):
             stepp=int(epoch)*(train_size)+step
@@ -34,10 +35,10 @@ def train(sess,loss_op,train_op,X,Y,train_X,train_Y,val_X,val_Y,prediction, last
                 elif stepp >5:
                     val_loss = alpha * val_loss + (1-alpha) * loss
                     #write up
-                    fout_log.write("Step " + str(step) + ", Validation running average= " + \
+                    fout_log.write("Step " + str(stepp) + ", Validation running average= " + \
                           "{:.4f}".format(val_loss ** 0.5) + ",Validation Loss= "+\
                           "{:.4f}".format(loss**0.5) + "\n")
-                    print(" Step " + str(step) + ", Validation running average= " + \
+                    print(" Step " + str(stepp) + ", Validation running average= " + \
                           "{:.4f}".format(val_loss ** 0.5) + ",Validatiion Loss= "+\
                           "{:.4f}".format(loss**0.5) + "\n")
                     if stepp > 10 and val_loss < val_best_loss:

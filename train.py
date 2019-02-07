@@ -16,6 +16,7 @@ def train(sess,loss_op,train_op,X,Y,train_X,train_Y,val_X,val_Y,prediction, last
     fetches = {'final_state': last_state,
               'prediction_lonlat': prediction}
 
+    #TODO: refactor
     for epoch in range(1):
         for step in range(train_size):
             stepp=int(epoch)*(train_size)+step

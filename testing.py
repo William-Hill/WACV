@@ -13,5 +13,5 @@ def test(name,sess,loss_op,train_op,X,Y,test_X,test_Y,prediction,last_state,fout
     for step in range(test_size):
         eval_out=sess.run(fetches, feed_dict={X:test_X[step]})
         output_image.append(eval_out['prediction_image'])
-        print(eval_out['prediction_image'])
+        # print(eval_out['prediction_image'])
     np.save("test_result_"+name+".npy", output_image)

@@ -22,6 +22,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Controls visibility of GPUs
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
 
 def check_for_gpu():
     if tf.test.gpu_device_name():
@@ -32,27 +34,26 @@ def check_for_gpu():
 
 
 
-#1: Log files
-fout_log= open("log.txt","w")
-fout_log.write("TEST LOG PRINT\nSOO\n")
+def set_training_parameters():
+    #This is the model
+    #2: Graph
+    #Training Parameters
+    #validation_step=10;
+    # The learning_rate passed to the optimizer
+    learning_rate = 0.001
+    # placeholders; A placeholder is simply a variable that we will assign data to at a later date. It allows us to create our operations and build our computation graph, without needing the data.
+    # batch_size defined in function.py, channels are dimensions of the input data aka climate variable
+    X = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, channels]) #shape=(24, ?, 128, 257, 3)
+    Y = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, 1]) #shape=(24, ?, 128, 257, 1)
+    timesteps = tf.shape(X)[1]
+    HEIGHT = tf.shape(X)[2]
+    WIDTH = tf.shape(X)[3]
 
-#This is the model
-#2: Graph
-#Training Parameters
-#validation_step=10;
-learning_rate =0.001
-#placeholders; batch_size defined in function.py, channels are dimensions of the input data aka climate variable
-X = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, channels]) #shape=(24, ?, 128, 257, 3)
-Y = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, 1]) #shape=(24, ?, 128, 257, 1)
-timesteps = tf.shape(X)[1]
-HEIGHT = tf.shape(X)[2]
-WIDTH = tf.shape(X)[3]
-
-prediction, last_state = ConvLSTM(X) #shape=(24, ?, 256, 513, 1)
-#minimize the loss between ground truth and prediction
-loss_op=tf.losses.mean_pairwise_squared_error(Y,prediction)
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-train_op = optimizer.minimize(loss_op)
+    prediction, last_state = ConvLSTM(X) #shape=(24, ?, 256, 513, 1)
+    #minimize the loss between ground truth and prediction
+    loss_op = tf.losses.mean_pairwise_squared_error(Y,prediction)
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+    train_op = optimizer.minimize(loss_op)
 
 #3 :Training
 with tf.Session() as sess:

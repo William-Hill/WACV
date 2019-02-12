@@ -35,6 +35,8 @@ def read_input(path):
 
     # load labels
     label=np.load("./Y_light.npy")
+    # get number of packages
+    
     d,__,__,__,__,__ = np.shape(image)
     te_image=np.asarray(image[0:int(d*0.2)])
     te_label=np.asarray(label[0:int(d*0.2)])

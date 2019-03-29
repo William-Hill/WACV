@@ -33,7 +33,7 @@ INITIAL_LEARNING_RATE = 0.1       # Initial learning rate.
 NUM_CLASSES = 4096 #cifar10_input.NUM_CLASSES
 w = 288
 h = 128
-channels = 1
+channels = 3
 
 # If a model is trained with multiple GPUs, prefix all Op names with tower_name
 # to differentiate the operations. Note that this prefix is removed from the

@@ -3,13 +3,13 @@ from __future__ import print_function
 import os
 import logging
 import tensorflow as tf
-from tensorflow.contrib import rnn
-from function import *
-from read_input import *
-from train import *
-from testing import *
-from rnn import *
-import numpy as np
+import read_input
+import train
+import rnn
+
+logger = logging.basicConfig(level=logging.DEBUG,
+                             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("wacv")
 # State from ground truth, initial position:given, output location feed to input as mask
 # (6, 60101, 128, 257)
 
@@ -43,17 +43,17 @@ fout_log.write("TEST LOG PRINT\nSOO\n")
 #validation_step=10;
 learning_rate =0.001
 #placeholders; batch_size defined in function.py, channels are dimensions of the input data aka climate variable
-X = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, channels]) #shape=(24, ?, 128, 257, 3)
-Y = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, 1]) #shape=(24, ?, 128, 257, 1)
+feature = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, channels]) #shape=(24, ?, 128, 257, 3)
+label = tf.placeholder("float", [FLAGS.batch_size, None, HEIGHT, WIDTH, 1]) #shape=(24, ?, 128, 257, 1)
 
 # TODO: are these variables needed, do not look like they are used after defining
-timesteps = tf.shape(X)[1]
-HEIGHT = tf.shape(X)[2]
-WIDTH = tf.shape(X)[3]
+timesteps = tf.shape(feature)[1]
+HEIGHT = tf.shape(feature)[2]
+WIDTH = tf.shape(feature)[3]
 
-prediction, last_state = ConvLSTM(X) #shape=(24, ?, 256, 513, 1)
+prediction, last_state = rnn.ConvLSTM(feature) #shape=(24, ?, 256, 513, 1)
 #minimize the loss between ground truth and prediction
-loss_op=tf.losses.mean_pairwise_squared_error(Y,prediction)
+loss_op=tf.losses.mean_pairwise_squared_error(label,prediction)
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 train_op = optimizer.minimize(loss_op)
 
@@ -64,10 +64,10 @@ with tf.Session() as sess:
     # TODO: are timesteps, HEIGHT, WIDTH used with this global_variables_initializer?
     init = tf.global_variables_initializer()
     sess.run(init)
-    train_X,train_Y,test_X,test_Y,val_X,val_Y=read_input()
+    train_X,train_Y,test_X,test_Y,val_X,val_Y=read_input.read_input()
     print("finished collecting data")
     for ii in range(100):
-        train(sess,loss_op,train_op,X,Y,train_X,train_Y,val_X,val_Y,prediction, last_state,fout_log)
+        train.train(sess,loss_op,train_op,feature,label,train_X,train_Y,val_X,val_Y,prediction, last_state,fout_log)
         name=str(ii)
-        test(name,sess,loss_op,train_op,X,Y,test_X,test_Y,prediction,last_state,fout_log)
+        test(name,sess,loss_op,train_op,feature,label,test_X,test_Y,prediction,last_state,fout_log)
 fout_log.close();
